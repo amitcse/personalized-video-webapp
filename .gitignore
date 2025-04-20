@@ -1,0 +1,28 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+venv/
+
+# Node/JS (if any)
+node_modules/
+
+# VSCode settings
+.vscode/
+
+# Playwright browsers (if installed locally)
+.playwright/
+
+# FFmpeg temporary files
+*.txt
+*_silent.mp4
+*_audio.mp3
+
+# Output/video folders
+output/
+static/videos/
+
+# OS files
+.DS_Store
+Thumbs.db

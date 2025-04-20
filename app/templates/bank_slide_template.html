@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{{ bank_name }} Summary</title>
+  <style>
+
+    .background-container {
+      position: relative;
+      width: 1280px; height: 720px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .background-container img.bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 1280px; height: 720px;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    /* Semi-transparent overlay for content legibility */
+    .slide {
+      position: relative;
+      z-index: 2;
+      width: 1000px;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .bank-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      color: #38bdf8;
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .highlight {
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    .section {
+      margin-top: 20px;
+      font-size: 22px;
+      line-height: 1.4;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="background-container">
+    <!-- Use <img> for background to ensure file:// URL loads -->
+    <img class="bg" src="{{ background_image }}" alt="bg"/>
+    <div class="slide">
+      {% if bank_logo %}
+        <img src="{{ bank_logo }}" alt="Bank Logo" class="bank-logo" />
+      {% endif %}
+      <h1>{{ bank_name }}</h1>
+
+      <div class="section">
+        <p>Your highest spend was <span class="highlight">₹{{ high_spend.amount }}</span>
+        at <span class="highlight">{{ high_spend.merchant }}</span> on
+        <span class="highlight">{{ high_spend.date }}</span>.</p>
+      </div>
+
+      <div class="section">
+        <p>This month, you spent <span class="highlight">₹{{ monthly_spend }}</span> in total.</p>
+      </div>
+
+      <div class="section">
+        <p>Category breakdown:</p>
+        <ul>
+          {% for category, amount in category_breakdown.items() %}
+            <li>{{ category }}: ₹{{ amount }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
