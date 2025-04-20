@@ -1,0 +1,10 @@
+__pycache__/
+venv/
+output/
+static/videos/
+.playwright/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+.git/
