@@ -1,40 +1,42 @@
-# Personalized Video Webapp
+# Personalized Video Generator Webapp
 
-> Generate and serve personalized 5-minute videos showing users their bank account summaries, high‑spend transactions, and category breakdowns—all with dynamic text, slides, and AI‑generated voice.
+> A web application that generates fully personalized videos by combining custom user data with dynamic templates and text-to-speech narration.
 
 ---
 
 ## 🚀 Features
 
-- **Dynamic Slides**: Renders HTML/CSS templates for intro, per‑bank summary, and outro.
-- **Background Images & Logos**: Supports custom background images and bank logos.
-- **Text‑to‑Speech**: Generates user‑specific narration using gTTS.
-- **Video Composition**: Stitches slides and audio into a single MP4 via FFmpeg.
-- **Web Interface**: FastAPI backend and simple HTML/JS frontend to collect input and preview results.
+- **Dynamic Templates**: Define HTML/CSS templates for intro, content slides, and outro sections.
+- **Custom Data Injection**: Inject user-provided JSON data into Jinja2 templates for fully personalized content.
+- **Text-to-Speech**: Generate narration audio on the fly using gTTS (Google Text-to-Speech).
+- **Headless Rendering**: Use Playwright and Chromium to render templates and capture high-quality screenshots.
+- **Video Composition**: Stitch slides and audio into a single MP4 video using FFmpeg.
+- **Web Interface**: Simple FastAPI backend and HTML/JavaScript frontend for input collection and video preview.
 
 ## 🛠 Tech Stack
 
-- **Backend**: [FastAPI](https://fastapi.tiangolo.com/) + Python 3.12
-- **Templating**: [Jinja2](https://palletsprojects.com/p/jinja/) for HTML slides
-- **TTS**: [gTTS](https://pypi.org/project/gTTS/) (Google Text‑to‑Speech)
-- **Browser Rendering**: [Playwright](https://playwright.dev/) for headless Chromium screenshots
-- **Audio/Video**: [FFmpeg](https://ffmpeg.org/) via subprocess, [pydub](https://github.com/jiaaro/pydub) for metadata
-- **Frontend**: Simple HTML + JavaScript form served by FastAPI
+- **Python 3.10+**
+- **FastAPI** for web server and API endpoints
+- **Jinja2** for HTML templating
+- **gTTS** for text-to-speech
+- **Playwright** for headless browser rendering
+- **FFmpeg** for video and audio processing
+- **pydub** for audio metadata handling
 
 ## ⚙️ Prerequisites
 
-- **Python 3.10+**
-- **FFmpeg** installed and available on your PATH
-- **Playwright** browsers installed
+- **Python 3.10 or newer**
+- **FFmpeg** installed and on your system PATH
+- **Playwright** browsers installed via `playwright install`
 
 ## 📥 Installation
 
 ```bash
-# Clone the repo
+# Clone the repository
 git clone git@github.com:YOUR_USERNAME/personalized-video-webapp.git
 cd personalized-video-webapp
 
-# Create a virtual environment
+# Create and activate a virtual environment
 python -m venv venv
 source venv/bin/activate  # Linux / macOS
 venv\\Scripts\\activate   # Windows
@@ -51,7 +53,7 @@ playwright install
 uvicorn app.main:app --reload
 ```
 
-Then open your browser to `http://127.0.0.1:8000`, fill in the form (name + bank JSON array), and click **Generate Video**. The personalized MP4 will appear below the form.
+Open `http://127.0.0.1:8000` in your browser, enter your custom JSON data in the form, and click **Generate Video** to see your personalized video.
 
 ## 📂 Project Structure
 
@@ -59,19 +61,18 @@ Then open your browser to `http://127.0.0.1:8000`, fill in the form (name + bank
 personalized-video-webapp/
 ├── app/
 │   ├── main.py                # FastAPI endpoints
-│   ├── generate_video.py      # Video pipeline logic
+│   ├── generate_video.py      # Core video generation pipeline
 │   └── templates/             # Jinja2 HTML slide templates
-│       ├── index.html         # Frontend form
-│       ├── intro.html         # Intro slide
-│       ├── bank_slide_template.html
-│       └── outro.html         # Outro slide
-├── assets/
-│   └── background.jpg         # Default background image
+│       ├── index.html         # Frontend form template
+│       ├── intro.html         # Intro slide template
+│       ├── bank_slide_template.html  # Generic content slide template
+│       └── outro.html         # Outro slide template
+├── assets/                    # Static assets (backgrounds, logos)
 ├── static/
-│   └── videos/                # Served MP4 files
+│   └── videos/                # Served MP4 output files
 ├── output/                    # Temporary slide, audio, and HTML assets
-├── requirements.txt
-├── data.json                  # Sample input for testing
+├── requirements.txt           # Python dependencies
+├── data.json                  # Sample data for testing
 └── README.md                  # This file
 ```
 
@@ -85,5 +86,4 @@ personalized-video-webapp/
 
 ## 📜 License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
+Distributed under the MIT License.
