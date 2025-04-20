@@ -1,0 +1,40 @@
+{
+    "name": "Amit Ranjan",
+    "banks":
+    [
+        {
+            "bank_name": "HDFC Bank",
+            "bank_logo": "https://upload.wikimedia.org/wikipedia/commons/2/28/HDFC_Bank_Logo.svg",
+            "high_spend":
+            {
+                "amount": 5600,
+                "merchant": "Amazon",
+                "date": "2025-04-12"
+            },
+            "monthly_spend": 28400,
+            "category_breakdown":
+            {
+                "Shopping": 14000,
+                "Groceries": 8000,
+                "Bills": 6400
+            }
+        },
+        {
+            "bank_name": "ICICI Bank",
+            "bank_logo": "https://upload.wikimedia.org/wikipedia/commons/1/12/ICICI_Bank_Logo.svg",
+            "high_spend":
+            {
+                "amount": 3200,
+                "merchant": "Swiggy",
+                "date": "2025-04-08"
+            },
+            "monthly_spend": 16700,
+            "category_breakdown":
+            {
+                "Food": 7000,
+                "Transport": 5000,
+                "Entertainment": 4700
+            }
+        }
+    ]
+}
