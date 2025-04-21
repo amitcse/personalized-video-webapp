@@ -1,20 +1,89 @@
 <!DOCTYPE html>
-<html>
-<head><style>
-  body {
-    background: #0f172a;
-    color: white;
-    font-family: "Segoe UI", sans-serif;
-    display: flex; justify-content: center; align-items: center;
-    height: 720px; width: 1280px;
-    text-align: center; padding: 40px;
-  }
-  h1 { color: #38bdf8; font-size: 48px; }
-</style></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Welcome Slide</title>
+  <!-- 1) Load the same auto‑registered CDN build you use in your bank slides -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    html, body {
+      margin:0; padding:0;
+      width:1280px; height:720px; overflow:hidden;
+      display:flex; justify-content:center; align-items:center;
+      background: linear-gradient(to bottom, #1a0a3c, #5d369f);
+      font-family:"Segoe UI",sans-serif;
+      color:white;
+    }
+    .content { text-align:center; }
+    .content h1 { font-size:64px; margin:0; }
+    .content h2 { font-size:48px; margin:10px 0 40px; font-weight:normal; }
+    #gaugeContainer {
+      position:relative;
+      width:600px; height:300px;
+      margin:0 auto;
+    }
+    #creditGauge {
+      display:block;
+      width:600px; height:300px;
+    }
+    .gauge-label {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      font-size:72px; font-weight:bold;
+      color:#6ef08a; pointer-events:none;
+    }
+  </style>
+</head>
 <body>
-  <div>
-    <h1>Hi {{ user_name }}!</h1>
-    <p>Let's walk through your bank account insights.</p>
+  <div class="content">
+    <h1>Hi <span style="color:#6ef08a">{{ user_name }}</span></h1>
+    <h2>Your Credit Score is</h2>
+    <div id="gaugeContainer">
+      <canvas id="creditGauge" width="600" height="300"></canvas>
+      <div class="gauge-label">{{ credit_score }}</div>
+    </div>
   </div>
+
+  <script>
+    // 2) Explicitly register the doughnut pieces
+    Chart.register(
+      Chart.ArcElement,
+      Chart.DoughnutController,
+      Chart.Legend,
+      Chart.Tooltip
+    );
+
+    // normalize score → [0..1]
+    const minScore = 300, maxScore = 900;
+    const score = {{ credit_score }};
+    const pct = Math.max(0, Math.min(1, (score - minScore)/(maxScore - minScore)));
+
+    const ctx = document.getElementById("creditGauge").getContext("2d");
+    // gradient across 600px
+    const grad = ctx.createLinearGradient(0, 0, 600, 0);
+    grad.addColorStop(0, "#f44336");
+    grad.addColorStop(0.5, "#ffeb3b");
+    grad.addColorStop(1, "#4caf50");
+
+    new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        datasets: [{
+          data: [pct, 1 - pct],
+          backgroundColor: [grad, "rgba(255,255,255,0.2)"],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        rotation: -Math.PI,
+        circumference: Math.PI,
+        cutout: "70%",
+        responsive: false,
+        maintainAspectRatio: false,
+        animation: { animateRotate: true, duration: 1500 },
+        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+      }
+    });
+  </script>
 </body>
 </html>

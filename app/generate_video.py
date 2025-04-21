@@ -11,15 +11,6 @@ from pydub.utils import mediainfo
 from playwright.async_api import async_playwright
 
 # Helper to render HTML file via URL and screenshot
-# async def render_slide_file_to_image(html_path: Path, image_path: Path):
-#     async with async_playwright() as p:
-#         browser = await p.chromium.launch()
-#         page = await browser.new_page(viewport={"width": 1280, "height": 720})
-#         await page.goto(html_path.resolve().as_uri())
-#         await page.wait_for_timeout(500)
-#         await page.screenshot(path=str(image_path))
-#         await browser.close()
-
 async def render_slide_file_to_image(
     html_path: Path,
     image_path: Path,
@@ -33,14 +24,14 @@ async def render_slide_file_to_image(
 
         # If the caller asked us to wait for some selector (e.g. the chart), do so
         if wait_selector:
-            await page.wait_for_selector(wait_selector, timeout=wait_ms * 3)
+            await page.wait_for_selector(wait_selector, timeout=wait_ms)
 
         # Always give a small pause to let CSS/backgrounds settle
         await page.wait_for_timeout(wait_ms)
         await page.screenshot(path=str(image_path))
         await browser.close()
 
-async def render_slide_to_video(html_path: Path, output_video: Path, record_secs: float = 1.2):
+async def render_slide_to_video(html_path: Path, output_video: Path, record_secs: float = 1.2, wait_selector: str = None, wait_ms: int = 500):
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         # Note: record_video_dir & record_video_size are the correct params
@@ -51,8 +42,9 @@ async def render_slide_to_video(html_path: Path, output_video: Path, record_secs
         )
         page = await context.new_page()
         await page.goto(html_path.resolve().as_uri())
-        # Wait for chart element and let animation play
-        await page.wait_for_selector("canvas#spendChart")
+        if wait_selector:
+            # Wait for chart element and let animation play
+            await page.wait_for_selector(wait_selector, timeout=wait_ms * 3)
         await page.wait_for_timeout(int(record_secs * 1000))
         await context.close()   # this flushes the recording
         await browser.close()
@@ -83,14 +75,19 @@ async def generate_video_from_data(data: dict, output_video_path: str):
     user_dir = Path("output") / f"{user_name}_{uuid.uuid4().hex[:6]}"
     user_dir.mkdir(parents=True, exist_ok=True)
 
-    # Copy background asset into user_dir for relative loading
-    assets_bg = Path(__file__).parent.parent / "assets" / "background.jpg"
-    shutil.copy(assets_bg, user_dir / "background.jpg")
-
     # Prepare templates
     template_dir = Path(__file__).parent / "templates"
     env = Environment(loader=FileSystemLoader(str(template_dir)))
     env.filters['tojson'] = json.dumps
+
+    # Copy background asset into user_dir for relative loading
+    assets_bg = Path(__file__).parent.parent / "assets" / "background.jpg"
+    shutil.copy(assets_bg, user_dir / "background.jpg")
+
+    # # Copy Chart.js into the same folder so intro.html can use "chart.umd.min.js"
+    # chart_src = template_dir / "libs" / "chart.umd.min.js"
+    # shutil.copy(chart_src, user_dir / "chart.umd.min.js")
+
 
     slide_images = []
     slide_audios = []
@@ -98,30 +95,25 @@ async def generate_video_from_data(data: dict, output_video_path: str):
     intro_idx = 0
     # 1. Intro slide
     intro_html_content = env.get_template("intro.html").render(
-        user_name=data["name"]
+        user_name=data["name"], 
+        credit_score=data["credit_score"]
     )
     intro_html_file = user_dir / "slide_0_intro.html"
-    intro_img = user_dir / "slide_0_intro.png"
+    # intro_img = user_dir / "slide_0_intro.png"
     intro_audio = user_dir / "audio_0_intro.mp3"
     intro_video = user_dir / "video_0_intro.mp4"
     intro_final = user_dir / f"{intro_idx:03d}_intro.mp4"
 
     intro_html_file.write_text(intro_html_content, encoding="utf-8")
-    await render_slide_file_to_image(intro_html_file, intro_img)
-    generate_audio(f"Hi {data['name']}, let's take a look at your bank account summary.", intro_audio)
-
-    # Create a silent video for intro_img matching audio duration
+    generate_audio(f"Hi {data['name']}! Your credit score is {data['credit_score']}. This is a good credit score. I have analysed your credit report and I have few suggestions for you to improve your credit score. Watch this video till the end follow the steps diligently.", intro_audio)
     dur = get_audio_duration(intro_audio)
-    subprocess.run([
-        "ffmpeg", "-y", "-loop", "1", "-i", str(intro_img), "-c:v", "libx264", "-t", str(dur), "-pix_fmt", "yuv420p", str(intro_video)
-    ], check=True)
 
+    await render_slide_to_video(intro_html_file, intro_video, record_secs=dur, wait_selector="canvas#creditGauge", wait_ms=500)
+    
     # Merge audio
-    subprocess.run([
-        "ffmpeg", "-y", "-i", str(intro_video), "-i", str(intro_audio), "-c:v", "copy", "-c:a", "aac", str(intro_final)], check=True)
+    subprocess.run(["ffmpeg", "-y", "-i", str(intro_video), "-i", str(intro_audio), "-c:v", "copy", "-c:a", "aac", str(intro_final)], check=True)
+    
     slide_segments.append(intro_final)
-    # slide_images.append(intro_img)
-    # slide_audios.append(intro_audio)
 
     # 2. Bank slides
     for idx, bank in enumerate(data["banks"], start=1):
@@ -143,10 +135,6 @@ async def generate_video_from_data(data: dict, output_video_path: str):
         )
         html_file.write_text(html_content, encoding="utf-8")
 
-        # await render_slide_file_to_image(html_file, img_file, wait_selector="canvas#spendChart", wait_ms=1200)
-        # Record animated chart video
-        await render_slide_to_video(html_file, anim_video, record_secs=1.2)
-
         # Generate audio
         narration = (
             f"In your {bank['bank_name']} account, your highest spend was "
@@ -154,6 +142,9 @@ async def generate_video_from_data(data: dict, output_video_path: str):
             f"Your monthly spend was {bank['monthly_spend']} rupees."
         )
         generate_audio(narration, audio_file)
+        dur = get_audio_duration(audio_file)
+        # Record animated chart video
+        await render_slide_to_video(html_file, anim_video, record_secs=dur, wait_selector="canvas#spendChart", wait_ms=500)
 
         # Merge video and audio
         subprocess.run([
@@ -162,8 +153,6 @@ async def generate_video_from_data(data: dict, output_video_path: str):
         ], check=True)
 
         slide_segments.append(final_seg)
-        # slide_images.append(img_file)
-        # slide_audios.append(audio_file)
 
     # 3. Outro slide
     outro_idx = len(data["banks"]) + 1
