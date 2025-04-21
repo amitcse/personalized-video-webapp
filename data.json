@@ -48,5 +48,40 @@
           }
     ],
     "more_count_closed": 22,
-    "total_count_closed": 26
+    "total_count_closed": 26,
+    "accounts_util_list":[
+        {
+            "name": "H.D.F.C. BANK",
+            "open_date": "07-11-2017",
+            "last_used": "14-03-2025",
+            "utilization": "Low"
+          },
+          {
+            "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+            "open_date": "28-06-2024",
+            "last_used": "26-03-2025",
+            "utilization": "Low"
+          },
+          {
+            "name": "AXIS BANK",
+            "open_date": "17-08-2020",
+            "last_used": "26-03-2025",
+            "utilization": "Medium"
+          },
+          {
+            "name": "YES BANK",
+            "open_date": "05-05-2019",
+            "last_used": "20-03-2025",
+            "utilization": "High"
+          }
+    ],
+    "accounts_util_single": {
+        "name": "H.D.F.C. BANK",
+        "open_date": "07-11-2017",
+        "sanctioned_amount": 1150000,
+        "utilized_amount": 93256,
+        "util_pct": 8.11,
+        "type": "Credit Card",
+        "bank_logo": "hdfc_logo.png"
+    }
 }

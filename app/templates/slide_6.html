@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Credit Utilisation</title>
+  <style>
+    /* Page & background */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background: linear-gradient(to bottom, #070927, #4b368e);
+      font-family: "Segoe UI", sans-serif;
+      color: #fff;
+      text-align: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 1rem;
+    }
+
+    /* Title */
+    .title {
+      font-size: 2rem;
+      margin: 0 0 1rem;
+    }
+
+    /* Card list */
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Single card */
+    .card {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #000;
+    }
+
+    /* Left side: number + details */
+    .card-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .number {
+      background: #E0F7FF;
+      color: #000;
+      font-weight: bold;
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .details {
+      text-align: left;
+      line-height: 1.3;
+    }
+    .bank-name {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .dates {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    .dates div {
+      margin: 2px 0;
+    }
+
+    /* Right side: utilization */
+    .util-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .track {
+      position: relative;
+      width: 8px;
+      height: 60px;
+      background: #ddd;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+    }
+    .util-text {
+      text-align: left;
+      font-size: 0.85rem;
+      line-height: 1.2;
+    }
+    .util-text .label {
+      color: #666;
+    }
+    .util-text .value {
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="title">Credit Utilisation</h1>
+
+    <div class="card-list">
+      {%- for acct in accounts %}
+        {%- if acct.utilization == 'Low' %}
+          {% set height = "20%" %}
+          {% set color  = "#3EE89E" %}
+        {%- elif acct.utilization == 'Medium' %}
+          {% set height = "50%" %}
+          {% set color  = "#FFFF00" %}
+        {%- else %}
+          {% set height = "80%" %}
+          {% set color  = "#FF4E4E" %}
+        {%- endif %}
+
+        <div class="card">
+          <div class="card-left">
+            <div class="number">{{ loop.index }}</div>
+            <div class="details">
+              <div class="bank-name">{{ acct.name }}</div>
+              <div class="dates">
+                <div>Open date: {{ acct.open_date }}</div>
+                <div>Last used: {{ acct.last_used }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="util-container">
+            <div class="track">
+              <div class="fill"
+                   style="height: {{ height }}; background-color: {{ color }};">
+              </div>
+            </div>
+            <div class="util-text">
+              <div class="label">Utilization:</div>
+              <div class="value"
+                   style="color: {{ color }};">
+                {{ acct.utilization }}
+              </div>
+            </div>
+          </div>
+        </div>
+      {%- endfor %}
+    </div>
+  </div>
+
+</body>
+</html>

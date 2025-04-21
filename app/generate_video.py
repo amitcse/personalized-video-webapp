@@ -220,118 +220,78 @@ async def generate_video_from_data(data: dict, output_video_path: str):
     subprocess.run(["ffmpeg", "-y", "-i", str(slide_5_video), "-i", str(slide_5_audio), "-c:v", "copy", "-c:a", "aac", str(slide_5_video_final)], check=True)
     slide_segments.append(slide_5_video_final)
 
+    # 6. Slide 6 - Credit Utilisation
+    slide_6_html_content = env.get_template("slide_6.html").render(accounts=data["accounts_util_list"])
+    slide_6_html_file = user_dir / "slide_6.html"
+    slide_6_img = user_dir / "slide_6.png"
+    slide_6_audio = user_dir / "audio_6.mp3"
+    slide_6_video = user_dir / "video_6.mp4"
+    slide_6_video_final = user_dir / "video_6_final.mp4"
 
-    # # 2. Bank slides
-    # for idx, bank in enumerate(data["banks"], start=1):
-    #     html_file = user_dir / f"slide_{idx}.html"
-    #     img_file = user_dir / f"slide_{idx}.png"
-    #     anim_video = user_dir / f"slide_{idx}.mp4"
-    #     audio_file = user_dir / f"audio_{idx}.mp3"
-    #     final_seg = user_dir / f"{idx:03d}_bank_{idx}.mp4"
-    #     # video_file = user_dir / f"slide_{idx}.mp4"
-        
-    #     # Render bank HTML with relative background.jpg
-    #     html_content = env.get_template("bank_slide_template.html").render(
-    #         bank_name=bank.get("bank_name"),
-    #         bank_logo=bank.get("bank_logo", ""),
-    #         high_spend=bank["high_spend"],
-    #         monthly_spend=bank["monthly_spend"],
-    #         category_breakdown=bank.get("category_breakdown", {}),
-    #         background_image="background.jpg"
-    #     )
-    #     html_file.write_text(html_content, encoding="utf-8")
+    slide_6_html_file.write_text(slide_6_html_content, encoding="utf-8")
+    await render_slide_file_to_image(slide_6_html_file, slide_6_img)
+    generate_audio(f"Now we will talk about credit utilisation ratio.\n", slide_6_audio)
+    
+    # Create a silent video for intro_img matching audio duration
+    dur = get_audio_duration(slide_6_audio)
+    subprocess.run(["ffmpeg", "-y", "-loop", "1", "-i", str(slide_6_img), "-c:v", "libx264", "-t", str(dur), "-pix_fmt", "yuv420p", str(slide_6_video)], check=True)
 
-    #     # await render_slide_file_to_image(html_file, img_file, wait_selector="canvas#spendChart", wait_ms=1200)
-    #     # Record animated chart video
-    #     await render_slide_to_video(html_file, anim_video, record_secs=1.2)
+    # Merge audio
+    subprocess.run(["ffmpeg", "-y", "-i", str(slide_6_video), "-i", str(slide_6_audio), "-c:v", "copy", "-c:a", "aac", str(slide_6_video_final)], check=True)
+    slide_segments.append(slide_6_video_final)
 
-    #     # Generate audio
-    #     narration = (
-    #         f"In your {bank['bank_name']} account, your highest spend was "
-    #         f"{bank['high_spend']['amount']} rupees at {bank['high_spend']['merchant']}. "
-    #         f"Your monthly spend was {bank['monthly_spend']} rupees."
-    #     )
-    #     generate_audio(narration, audio_file)
 
-    #     # Merge video and audio
-    #     subprocess.run([
-    #         "ffmpeg", "-y", "-i", str(anim_video), "-i", str(audio_file),
-    #         "-c:v", "copy", "-c:a", "aac", str(final_seg)
-    #     ], check=True)
+    # 7. Slide 7 - Credit Utilisation - Single Card
+    slide_7_html_content = env.get_template("slide_7.html").render(account=data["accounts_util_single"])
+    slide_7_html_file = user_dir / "slide_7.html"
+    slide_7_img = user_dir / "slide_7.png"
+    slide_7_audio = user_dir / "audio_7.mp3"
+    slide_7_video = user_dir / "video_7.mp4"
+    slide_7_video_final = user_dir / "video_7_final.mp4"
 
-    #     slide_segments.append(final_seg)
-    #     # slide_images.append(img_file)
-    #     # slide_audios.append(audio_file)
+    slide_7_html_file.write_text(slide_7_html_content, encoding="utf-8")
+    await render_slide_file_to_image(slide_7_html_file, slide_7_img)
+    generate_audio(f"Let's check your existing credit card with utilization of {data["accounts_util_single"]["util_pct"]} taken on {data["accounts_util_single"]["open_date"]}.\n" 
+                   f"Let's talk about your credit utilisation ratio and it's impact on your credit score.\n"
+                   f"You have used {data["accounts_util_single"]["util_pct"]} percent of your credit limit on your {data["accounts_util_single"]["name"]} card.\n"
+                   f"This is a good thing. Less than 40 percent ensures that you are not using your entire credit limit available.\n"
+                   f"You need to maintain this behaviour. Using up more than 40 percent of your credit limit means you are in need of money.\n"
+                   f"This lowers your credit score.\n", slide_7_audio)
+    
+    # Create a silent video for intro_img matching audio duration
+    dur = get_audio_duration(slide_7_audio)
+    subprocess.run(["ffmpeg", "-y", "-loop", "1", "-i", str(slide_7_img), "-c:v", "libx264", "-t", str(dur), "-pix_fmt", "yuv420p", str(slide_7_video)], check=True)
 
-    # # 3. Outro slide
-    # outro_idx = len(data["banks"]) + 1
-    # outro_html_file = user_dir / f"slide_{outro_idx}_outro.html"
-    # outro_img = user_dir / f"slide_{outro_idx}_outro.png"
-    # outro_audio = user_dir / f"audio_{outro_idx}_outro.mp3"
-    # outro_video = user_dir / f"slide_{outro_idx}.mp4"
-    # outro_final = user_dir / f"{outro_idx:03d}_outro.mp4"
+    # Merge audio
+    subprocess.run(["ffmpeg", "-y", "-i", str(slide_7_video), "-i", str(slide_7_audio), "-c:v", "copy", "-c:a", "aac", str(slide_7_video_final)], check=True)
+    slide_segments.append(slide_7_video_final)
 
-    # outro_content = env.get_template("outro.html").render()
-    # outro_html_file.write_text(outro_content, encoding="utf-8")
-    # await render_slide_file_to_image(outro_html_file, outro_img)
-    # generate_audio(
-    #     "Hope this was helpful. Explore more features in our app!",
-    #     outro_audio
-    # )
 
-    # dur2 = get_audio_duration(outro_audio)
-    # subprocess.run([
-    #     "ffmpeg", "-y", "-loop", "1", "-i", str(outro_img), "-c:v", "libx264", "-t", str(dur2), "-pix_fmt", "yuv420p", str(outro_video)
-    # ], check=True)
-    # subprocess.run([
-    #     "ffmpeg", "-y", "-i", str(outro_video), "-i", str(outro_audio), "-c:v", "copy", "-c:a", "aac", str(outro_final)
-    # ], check=True)
-    # slide_segments.append(outro_final)
-    # slide_images.append(outro_img)
-    # slide_audios.append(outro_audio)
+    # 8. Slide 8 - Finish
+    slide_8_html_content = env.get_template("slide_8.html").render()
+    slide_8_html_file = user_dir / "slide_8.html"
+    slide_8_img = user_dir / "slide_8.png"
+    slide_8_audio = user_dir / "audio_8.mp3"
+    slide_8_video = user_dir / "video_8.mp4"
+    slide_8_video_final = user_dir / "video_8_final.mp4"
 
-    # # 4. Create concat list with durations
-    # inputs_txt = user_dir / "inputs.txt"
-    # with open(inputs_txt, "w") as f:
-    #     for img, audio in zip(slide_images, slide_audios):
-    #         dur = get_audio_duration(audio)
-    #         f.write(f"file '{img.resolve()}'\n")
-    #         f.write(f"duration {dur}\n")
-    #     # repeat last
-    #     f.write(f"file '{slide_images[-1].resolve()}'\n")
+    slide_8_html_content = env.get_template("slide_8.html").render()
+    slide_8_html_file.write_text(slide_8_html_content, encoding="utf-8")
+    await render_slide_file_to_image(slide_8_html_file, slide_8_img)
+    generate_audio(
+        "Hope this was helpful. Explore more features in our app! Please reach out to our experts anytime you have any questions. We're always here to help you.",
+        slide_8_audio
+    )
 
-    # # 5. Generate silent video segments
-    # silent_video = user_dir / "video_silent.mp4"
-    # subprocess.run([
-    #     "ffmpeg", "-y",
-    #     "-f", "concat", "-safe", "0",
-    #     "-i", str(inputs_txt),
-    #     "-vsync", "vfr", "-pix_fmt", "yuv420p",
-    #     str(silent_video)
-    # ], check=True)
+    dur = get_audio_duration(slide_8_audio)
+    subprocess.run(["ffmpeg", "-y", "-loop", "1", "-i", str(slide_8_img), "-c:v", "libx264", "-t", str(dur), "-pix_fmt", "yuv420p", str(slide_8_video)], check=True)
+    
+    # Merge audio
+    subprocess.run(["ffmpeg", "-y", "-i", str(slide_8_video), "-i", str(slide_8_audio), "-c:v", "copy", "-c:a", "aac", str(slide_8_video_final)], check=True)
+    slide_segments.append(slide_8_video_final)
 
-    # # 6. Mix audio tracks
-    # final_audio = user_dir / "video_audio.mp3"
-    # inputs = []
-    # for audio in slide_audios:
-    #     inputs.extend(["-i", str(audio)])
-    # labels = ''.join(f"[{i}:a]" for i in range(len(slide_audios)))
-    # filter_c = f"{labels}concat=n={len(slide_audios)}:v=0:a=1[out]"
-    # cmd_audio = ["ffmpeg", "-y", *inputs, "-filter_complex", filter_c, "-map", "[out]", str(final_audio)]
-    # subprocess.run(cmd_audio, shell=False, check=True)
 
-    # # 7. Combine video and audio
-    # subprocess.run([
-    #     "ffmpeg", "-y",
-    #     "-i", str(silent_video),
-    #     "-i", str(final_audio),
-    #     "-c:v", "copy", "-c:a", "aac",
-    #     output_video_path
-    # ], check=True)
-
-    # print(f"✅ Video ready at {output_video_path}")
-
-    # 4. Concatenate all segments
+    # Concatenate all segments
     concat_list = user_dir / "concat_list.txt"
     with open(concat_list, "w") as f:
         for seg in slide_segments:
