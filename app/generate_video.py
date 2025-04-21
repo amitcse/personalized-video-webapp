@@ -10,6 +10,10 @@ from gtts import gTTS
 from pydub.utils import mediainfo
 from playwright.async_api import async_playwright
 
+
+WIDTH, HEIGHT = 430, 932
+
+
 # Helper to render HTML file via URL and screenshot
 # async def render_slide_file_to_image(html_path: Path, image_path: Path):
 #     async with async_playwright() as p:
@@ -28,7 +32,7 @@ async def render_slide_file_to_image(
 ):
     async with async_playwright() as p:
         browser = await p.chromium.launch()
-        page = await browser.new_page(viewport={"width":1280,"height":720})
+        page = await browser.new_page(viewport={"width":WIDTH,"height":HEIGHT})
         await page.goto(html_path.resolve().as_uri())
 
         # If the caller asked us to wait for some selector (e.g. the chart), do so
@@ -47,9 +51,9 @@ async def render_slide_to_video(html_path: Path, output_video: Path,
         browser = await p.chromium.launch()
         # Note: record_video_dir & record_video_size are the correct params
         context = await browser.new_context(
-            viewport={"width": 1280, "height": 720},
+            viewport={"width":WIDTH,"height":HEIGHT},
             record_video_dir=str(html_path.parent),
-            record_video_size={"width": 1280, "height": 720},
+            record_video_size={"width":WIDTH,"height":HEIGHT},
         )
         page = await context.new_page()
         await page.goto(html_path.resolve().as_uri())
