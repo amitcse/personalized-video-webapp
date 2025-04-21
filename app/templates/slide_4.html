@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Congratulations</title>
+  <style>
+    /* full‑screen purple gradient */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to bottom, #070927, #4b368e);
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    /* chalkboard frame */
+    .board {
+      position: relative;
+      width: 320px;
+      height: 500px;
+      background: #2b2b2b;
+      /* subtle chalky texture */
+      background-image:
+        radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 20px 20px;
+      border: 12px solid #d2a679;   /* wood frame */
+      border-radius: 4px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.7),
+                  0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 40px;
+      box-sizing: border-box;
+    }
+
+    /* chalk‑style heading */
+    .board h1 {
+      margin: 0;
+      color: #3EE89E;
+      font-size: 1.8rem;
+      font-family: "Comic Sans MS", cursive;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    }
+
+    /* character graphic */
+    .board img {
+      margin-top: -70px;
+      width: 100%;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="board">
+    <h1>Congratulations!</h1>
+    <!-- replace with your actual filename -->
+    <img src="character.png" alt="Happy person giving thumbs up">
+  </div>
+
+</body>
+</html>

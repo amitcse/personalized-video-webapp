@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Closed Accounts</title>
+  <style>
+    /* page & background */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background: linear-gradient(to bottom, #070927, #4b368e);
+      font-family: "Segoe UI", sans-serif;
+      color: #fff;
+      text-align: center;
+    }
+
+    /* container */
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* title */
+    .title {
+      font-size: 2rem;
+      margin: 0;
+    }
+    .title .red {
+      color: #FF4E4E;
+    }
+
+    /* account list */
+    .account-list {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .account-card {
+      background: #fff;
+      border-radius: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      color: #000;
+    }
+
+    .card-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .number {
+      background: #E0F7FF;
+      font-weight: bold;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.75rem;
+    }
+
+    .details {
+      text-align: left;
+    }
+    .details .name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .details .date {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+
+    .type {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .type.credit { background: #E0F7FF; }
+    .type.loan   { background: #F2E5FF; }
+    .type.other  { background: #FFF5E0; }
+
+    .icon {
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+    }
+    .label {
+      font-size: 0.65rem;
+      line-height: 1;
+      white-space: pre-line;
+    }
+
+    /* footer */
+    .footer {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #C1B3F9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="title">
+      <span class="red">Closed</span> Accounts
+    </h1>
+
+    <div class="account-list">
+      {%- for acct in accounts %}
+        <div class="account-card">
+          <div class="card-left">
+            <div class="number">{{ loop.index }}</div>
+            <div class="details">
+              <div class="name">{{ acct.name }}</div>
+              <div class="date">Open Date: {{ acct.open_date }}</div>
+            </div>
+          </div>
+          <div class="type 
+            {%- if 'credit' in acct.type.lower() -%}
+              credit
+            {%- elif acct.type.lower() == 'personal loan' -%}
+              loan
+            {%- elif 'loan' in acct.type.lower() -%}
+              loan
+            {%- else -%}
+              other
+            {%- endif -%}">
+            <div class="icon">
+              {%- if 'credit' in acct.type.lower() -%}
+                💳
+              {%- elif acct.type.lower() == 'personal loan' -%}
+                💸
+              {%- elif 'loan' in acct.type.lower() -%}
+                🏠
+              {%- else -%}
+                🔖
+              {%- endif -%}
+            </div>
+            <div class="label">{{ acct.type.replace(' ', '\n') }}</div>
+          </div>
+        </div>
+      {%- endfor %}
+    </div>
+
+    <div class="footer">
+      and {{ more_count }} more accounts…
+    </div>
+  </div>
+
+</body>
+</html>

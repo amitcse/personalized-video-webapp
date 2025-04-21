@@ -1,40 +1,52 @@
 {
     "name": "Amit Ranjan",
-    "banks":
-    [
+    "credit_score": 840,
+    "accounts_active": [
         {
-            "bank_name": "HDFC Bank",
-            "bank_logo": "https://upload.wikimedia.org/wikipedia/commons/2/28/HDFC_Bank_Logo.svg",
-            "high_spend":
-            {
-                "amount": 5600,
-                "merchant": "Amazon",
-                "date": "2025-04-12"
-            },
-            "monthly_spend": 28400,
-            "category_breakdown":
-            {
-                "Shopping": 14000,
-                "Groceries": 8000,
-                "Bills": 6400
-            }
-        },
+            "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+            "open_date": "28-06-2024",
+            "type": "Credit Card"
+          },
+          {
+            "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+            "open_date": "18-06-2024",
+            "type": "Housing Loan"
+          },
+          {
+            "name": "AU SMALL FINANCE BANK",
+            "open_date": "17-01-2024",
+            "type": "Credit Card"
+          },
+          {
+            "name": "YES BANK",
+            "open_date": "21-10-2023",
+            "type": "Credit Card"
+          }
+    ],
+    "more_count_active": 12,
+    "total_count_active": 16,
+    "accounts_closed": [
         {
-            "bank_name": "ICICI Bank",
-            "bank_logo": "https://upload.wikimedia.org/wikipedia/commons/1/12/ICICI_Bank_Logo.svg",
-            "high_spend":
-            {
-                "amount": 3200,
-                "merchant": "Swiggy",
-                "date": "2025-04-08"
-            },
-            "monthly_spend": 16700,
-            "category_breakdown":
-            {
-                "Food": 7000,
-                "Transport": 5000,
-                "Entertainment": 4700
-            }
-        }
-    ]
+            "name": "KISETSU SAISON FINANCE INDIA",
+            "open_date": "28-10-2024",
+            "type": "Personal Loan"
+          },
+          {
+            "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+            "open_date": "28-06-2024",
+            "type": "Credit Card"
+          },
+          {
+            "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+            "open_date": "18-06-2024",
+            "type": "Housing Loan"
+          },
+          {
+            "name": "AU SMALL FINANCE BANK",
+            "open_date": "21-07-2024",
+            "type": "Credit Card"
+          }
+    ],
+    "more_count_closed": 22,
+    "total_count_closed": 26
 }
