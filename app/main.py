@@ -16,12 +16,9 @@ async def form_get(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/generate", response_class=HTMLResponse)
-async def generate(request: Request, user_name: str = Form(...), bank_json: str = Form(...)):
+async def generate(request: Request, user_name: str = Form(...), data_json: str = Form(...)):
     user_id = str(uuid.uuid4())[:8]
-    data = {
-        "name": user_name,
-        "banks": json.loads(bank_json)
-    }
+    data = json.loads(data_json)
 
     output_path = f"static/videos/{user_id}.mp4"
     os.makedirs("static/videos", exist_ok=True)

@@ -9,46 +9,101 @@
     <label>Your Name:</label><br/>
     <input name="user_name" required/><br/><br/>
     <label>Bank JSON:</label><br/>
-    <textarea name="bank_json" rows="10" cols="50" required>
-    [
+    <textarea name="data_json" rows="10" cols="50" required>
       {
-        "bank_name": "HDFC Bank",
-        "bank_logo": "https://upload.wikimedia.org/wikipedia/commons/2/28/HDFC_Bank_Logo.svg",
-        "high_spend": {
-          "amount": 5600,
-          "merchant": "Amazon",
-          "date": "2025-04-12"
-        },
-        "monthly_spend": 28400,
-        "category_breakdown": {
-          "Shopping": 14000,
-          "Groceries": 8000,
-          "Bills": 6400
+        "name": "Amit Ranjan",
+        "credit_score": 840,
+        "accounts_active": [
+            {
+                "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+                "open_date": "28-06-2024",
+                "type": "Credit Card"
+              },
+              {
+                "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+                "open_date": "18-06-2024",
+                "type": "Housing Loan"
+              },
+              {
+                "name": "AU SMALL FINANCE BANK",
+                "open_date": "17-01-2024",
+                "type": "Credit Card"
+              },
+              {
+                "name": "YES BANK",
+                "open_date": "21-10-2023",
+                "type": "Credit Card"
+              }
+        ],
+        "more_count_active": 12,
+        "total_count_active": 16,
+        "accounts_closed": [
+            {
+                "name": "KISETSU SAISON FINANCE INDIA",
+                "open_date": "28-10-2024",
+                "type": "Personal Loan"
+              },
+              {
+                "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+                "open_date": "28-06-2024",
+                "type": "Credit Card"
+              },
+              {
+                "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+                "open_date": "18-06-2024",
+                "type": "Housing Loan"
+              },
+              {
+                "name": "AU SMALL FINANCE BANK",
+                "open_date": "21-07-2024",
+                "type": "Credit Card"
+              }
+        ],
+        "more_count_closed": 22,
+        "total_count_closed": 26,
+        "accounts_util_list":[
+            {
+                "name": "H.D.F.C. BANK",
+                "open_date": "07-11-2017",
+                "last_used": "14-03-2025",
+                "utilization": "Low"
+              },
+              {
+                "name": "THE HONGKONG AND SHANGHAI BANKING CORP",
+                "open_date": "28-06-2024",
+                "last_used": "26-03-2025",
+                "utilization": "Low"
+              },
+              {
+                "name": "AXIS BANK",
+                "open_date": "17-08-2020",
+                "last_used": "26-03-2025",
+                "utilization": "Medium"
+              },
+              {
+                "name": "YES BANK",
+                "open_date": "05-05-2019",
+                "last_used": "20-03-2025",
+                "utilization": "High"
+              }
+        ],
+        "accounts_util_single": {
+            "name": "H.D.F.C. BANK",
+            "open_date": "07-11-2017",
+            "sanctioned_amount": 1150000,
+            "utilized_amount": 93256,
+            "util_pct": 8.11,
+            "type": "Credit Card",
+            "bank_logo": "hdfc_logo.png"
         }
-      },
-      {
-        "bank_name": "ICICI Bank",
-        "bank_logo": "https://upload.wikimedia.org/wikipedia/commons/1/12/ICICI_Bank_Logo.svg",
-        "high_spend": {
-          "amount": 3200,
-          "merchant": "Swiggy",
-          "date": "2025-04-08"
-        },
-        "monthly_spend": 16700,
-        "category_breakdown": {
-          "Food": 7000,
-          "Transport": 5000,
-          "Entertainment": 4700
-        }
-      }
-    ]
+    }
     </textarea><br/><br/>
     <button type="submit">Generate Video</button>
   </form>
 
   {% if video_url %}
     <h3>Your Video:</h3>
-    <video src="{{ video_url }}" controls width="600"></video>
+    <video src="{{ video_url }}" controls width="300"></video>
   {% endif %}
 </body>
 </html>
