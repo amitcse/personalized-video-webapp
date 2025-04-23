@@ -14,7 +14,7 @@ from botocore.exceptions import BotoCoreError, ClientError
 from google.cloud import texttospeech
 from google.oauth2 import service_account
 gtts_creds = service_account.Credentials.from_service_account_file(
-    "/Users/amit/Downloads/credi-shield-7d468ef93e32.json"
+    "google-tts-keys.json"
 )
 gtts_client = texttospeech.TextToSpeechClient(credentials=gtts_creds)
 

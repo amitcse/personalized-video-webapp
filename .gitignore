@@ -26,3 +26,5 @@ static/videos/
 # OS files
 .DS_Store
 Thumbs.db
+
+google-tts-keys.json
