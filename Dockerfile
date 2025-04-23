@@ -17,8 +17,8 @@ RUN apt-get update && \
 # Copy application source code
 COPY . ./
 
-# Ensure Playwright browsers are installed
-RUN playwright install --with-deps
+# # Ensure Playwright browsers are installed
+# RUN playwright install --with-deps
 
 # Create directories for generated files
 RUN mkdir -p static/videos output
