@@ -9,6 +9,14 @@ from jinja2 import Environment, FileSystemLoader
 from gtts import gTTS
 from pydub.utils import mediainfo
 from playwright.async_api import async_playwright
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError
+from google.cloud import texttospeech
+from google.oauth2 import service_account
+gtts_creds = service_account.Credentials.from_service_account_file(
+    "/Users/amit/Downloads/credi-shield-7d468ef93e32.json"
+)
+gtts_client = texttospeech.TextToSpeechClient(credentials=gtts_creds)
 
 
 WIDTH, HEIGHT = 430, 932
@@ -80,6 +88,66 @@ def generate_audio(text: str, audio_path: Path):
     tts = gTTS(text, lang='en', tld='co.in')
     tts.save(str(audio_path))
 
+# # Amazon Polly
+# def synthesize_to_file(text, filename="speech.mp3",
+#                        voice_id: str = "Kajal",         # or "Raveena", "Kajal"
+#                        language_code: str = "en-IN",    # en-IN for Indian English
+#                        output_format="mp3",
+#                        sample_rate="24000"):
+#     polly = boto3.client("polly", region_name="us-east-1", aws_access_key_id="AKIA5B4DM4HD--------", aws_secret_access_key="Jebde0ET/H1njrFv------------------------")
+
+#     try:
+#         response = polly.synthesize_speech(
+#             Text=text,
+#             OutputFormat=output_format,
+#             VoiceId=voice_id,
+#             SampleRate=sample_rate,
+#             LanguageCode=language_code,
+#             Engine="neural"
+#         )
+#     except (BotoCoreError, ClientError) as err:
+#         print("Error calling Polly:", err)
+#         return
+
+#     # The audio stream is in response["AudioStream"]
+#     with open(filename, "wb") as f:
+#         f.write(response["AudioStream"].read())
+#     print(f"✓ Wrote speech to {filename}")
+
+
+# Google TTS
+def synthesize_plain_text(
+    text: str,
+    output_path: str = "output.mp3",
+    voice_name: str = "en-IN-Wavenet-C",
+    language_code: str = "en-IN", 
+    speaking_rate: float = 1.0,
+    pitch: float = 0.0,
+):
+    client = gtts_client
+
+    synthesis_input = texttospeech.SynthesisInput(text=text)
+    voice_params = texttospeech.VoiceSelectionParams(
+        language_code=language_code,
+        name=voice_name,
+        ssml_gender=texttospeech.SsmlVoiceGender.MALE,
+    )
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3,
+        speaking_rate=speaking_rate,
+        pitch=pitch,
+    )
+
+    response = client.synthesize_speech(
+        input=synthesis_input,
+        voice=voice_params,
+        audio_config=audio_config,
+    )
+    with open(output_path, "wb") as f:
+        f.write(response.audio_content)
+    print(f"✓ Audio written to {output_path}")
+
+
 # Get duration in seconds of an audio file
 def get_audio_duration(audio_path: Path) -> float:
     info = mediainfo(str(audio_path))
@@ -106,8 +174,6 @@ async def generate_video_from_data(data: dict, output_video_path: str):
     env = Environment(loader=FileSystemLoader(str(template_dir)))
     env.filters['tojson'] = json.dumps
 
-    slide_images = []
-    slide_audios = []
     slide_segments = []  # list of video file paths or static slide videos
 
     # 1. Slide 1
@@ -120,9 +186,8 @@ async def generate_video_from_data(data: dict, output_video_path: str):
 
     slide_1_html_file.write_text(slide_1_html_content, encoding="utf-8")
     await render_slide_file_to_image(slide_1_html_file, slide_1_img)
-    generate_audio(f"Hi {data['name']}, Your credit score is {data['credit_score']}.\n"
-                   f" This is a good credit score. I have analysed your credit report and I have few suggestions for you to improve your credit score.\n"
-                   f" Watch this video till the end and follow the steps diligently.", slide_1_audio)
+    synthesize_plain_text(f"Hi {data['name']}, Your credit score is {data['credit_score']}.\n"
+                   f" This is a good credit score. I have analysed your credit report and I have few suggestions for you to improve your credit score. Watch this video till the end and follow the steps diligently.", slide_1_audio)
 
     # Create a silent video for intro_img matching audio duration
     dur = get_audio_duration(slide_1_audio)
@@ -146,7 +211,7 @@ async def generate_video_from_data(data: dict, output_video_path: str):
 
     slide_2_html_file.write_text(slide_2_html_content, encoding="utf-8")
     await render_slide_file_to_image(slide_2_html_file, slide_2_img)
-    generate_audio(f"I can check that you currently have {data['total_count_active']} active accounts in your profile.\n"
+    synthesize_plain_text(f"I can check that you currently have {data['total_count_active']} active accounts in your profile.\n"
                    f" There are no missed payments recorded on these accounts yet. This is a great thing. Continue this and ensure that no E.M.I. payments gets missed.\n"
                    f" Missing payments leads to lowering of credit score by 50 to 100 points. This will badly affect your good payment history. Avoid this.\n"
                    f"Timely payments is a financially sound behaviour and leads to good credit score.\n", slide_2_audio)
@@ -170,7 +235,7 @@ async def generate_video_from_data(data: dict, output_video_path: str):
 
     slide_3_html_file.write_text(slide_3_html_content, encoding="utf-8")
     await render_slide_file_to_image(slide_3_html_file, slide_3_img)
-    generate_audio(f"I can check that you currently have {data['total_count_closed']} closed accounts in your profile.\n"
+    synthesize_plain_text(f"I can check that you currently have {data['total_count_closed']} closed accounts in your profile.\n"
                    f" There are no missed payments recorded on these accounts yet. This is a great thing.\n"
                    f"Timely payments is a financially sound behaviour and leads to good credit score.\n", slide_3_audio)
     
@@ -193,7 +258,7 @@ async def generate_video_from_data(data: dict, output_video_path: str):
 
     slide_4_html_file.write_text(slide_4_html_content, encoding="utf-8")
     await render_slide_file_to_image(slide_4_html_file, slide_4_img)
-    generate_audio(f"I wanted to take a moment to congratulate you on your stellar credit history.\n", slide_4_audio)
+    synthesize_plain_text(f"I wanted to take a moment to congratulate you on your stellar credit history.\n", slide_4_audio)
     
     # Create a silent video for intro_img matching audio duration
     dur = get_audio_duration(slide_4_audio)
@@ -213,7 +278,7 @@ async def generate_video_from_data(data: dict, output_video_path: str):
     slide_5_video_final = user_dir / "video_5_final.mp4"
 
     slide_5_html_file.write_text(slide_5_html_content, encoding="utf-8")
-    generate_audio(f"Its clear that you have been diligently making payments on time.\n" 
+    synthesize_plain_text(f"Its clear that you have been diligently making payments on time.\n" 
                    f" And your account's long history reflects your commitments to financial responsibility.\n", slide_5_audio)
     
     # Create a silent video for intro_img matching audio duration
@@ -234,7 +299,7 @@ async def generate_video_from_data(data: dict, output_video_path: str):
 
     slide_6_html_file.write_text(slide_6_html_content, encoding="utf-8")
     await render_slide_file_to_image(slide_6_html_file, slide_6_img)
-    generate_audio(f"Now we will talk about credit utilisation ratio.\n", slide_6_audio)
+    synthesize_plain_text(f"Now we will talk about credit utilisation ratio.\n", slide_6_audio)
     
     # Create a silent video for intro_img matching audio duration
     dur = get_audio_duration(slide_6_audio)
@@ -255,7 +320,7 @@ async def generate_video_from_data(data: dict, output_video_path: str):
 
     slide_7_html_file.write_text(slide_7_html_content, encoding="utf-8")
     await render_slide_file_to_image(slide_7_html_file, slide_7_img)
-    generate_audio(f"Let's check your existing credit card with utilization of {data["accounts_util_single"]["util_pct"]} taken on {data["accounts_util_single"]["open_date"]}.\n" 
+    synthesize_plain_text(f"Let's check your existing credit card with utilization of {data["accounts_util_single"]["util_pct"]} taken on {data["accounts_util_single"]["open_date"]}.\n" 
                    f"Let's talk about your credit utilisation ratio and it's impact on your credit score.\n"
                    f"You have used {data["accounts_util_single"]["util_pct"]} percent of your credit limit on your {data["accounts_util_single"]["name"]} card.\n"
                    f"This is a good thing. Less than 40 percent ensures that you are not using your entire credit limit available.\n"
@@ -282,7 +347,7 @@ async def generate_video_from_data(data: dict, output_video_path: str):
     slide_8_html_content = env.get_template("slide_8.html").render()
     slide_8_html_file.write_text(slide_8_html_content, encoding="utf-8")
     await render_slide_file_to_image(slide_8_html_file, slide_8_img)
-    generate_audio(
+    synthesize_plain_text(
         "Hope this was helpful. Explore more features in our app! Please reach out to our experts anytime you have any questions. We're always here to help you.",
         slide_8_audio
     )
